@@ -26,10 +26,10 @@ def read_barcode():
         results = dbr.decodeBuffer(frame, formats)
         if (len(results) > 0):
             print(get_time())
-            print "Total count: " + str(len(results))
+            print("Total count: " + str(len(results)))
             for result in results:
-                print "Type: " + result[0]
-                print "Value: " + result[1] + "\n"
+                print("Type: " + result[0])
+                print("Value: " + result[1] + "\n")
 
         # 'ESC' for quit
         key = cv2.waitKey(20)
@@ -40,5 +40,5 @@ def read_barcode():
     cv2.destroyWindow(windowName)
 
 if __name__ == "__main__":
-    print "OpenCV version: " + cv2.__version__
+    print("OpenCV version: " + cv2.__version__)
     read_barcode()
