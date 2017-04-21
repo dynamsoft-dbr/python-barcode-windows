@@ -56,7 +56,7 @@
 1. Connect a USB webcam to your PC.
 2. Run **camera.py** or **camera_thread.py**:
     ```
-    python app.py
+    python camera.py
     ```
     ![webcam barcode reader with OpenCV Python](http://www.codepool.biz/wp-content/uploads/2017/04/python-barcode-reader.PNG)
 
