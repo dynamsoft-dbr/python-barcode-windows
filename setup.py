@@ -11,8 +11,6 @@ if sys.version_info[0] == 2 and sys.version_info[1] == 7:
 else:
     numpy_include_dir = "F:\\Python35\\Lib\\site-packages\\numpy-1.11.2-py3.5-win32.egg\\numpy\\core\\include\\numpy"
 
-print(sys.version_info)
-print(numpy_include_dir)
 module_dbr = Extension('dbr', sources=['dbr.c'], include_dirs=[
                        numpy_include_dir, dbr_include_dir], library_dirs=[dbr_lib_dir], libraries=['DBRx86'])
 

@@ -1,14 +1,11 @@
 #include <Python.h>
 #include "DynamsoftBarcodeReader.h"
 #include <ndarraytypes.h>
+
 #if PY_MAJOR_VERSION >= 3
-
-// #include "numpymemoryview.h"
-
 #ifndef IS_PY3K
 #define IS_PY3K 1
 #endif
-
 #endif
 
 struct module_state {

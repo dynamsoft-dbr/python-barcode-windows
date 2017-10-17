@@ -26,7 +26,7 @@ if __name__ == "__main__":
     if not os.path.isfile(barcode_image):
         print("It is not a valid file.")
     else:
-        initLicense("t0068MgAAAGvV3VqfqOzkuVGi7x/PFfZUQoUyJOakuduaSEoI2Pc8+kMwjrojxQgE5aJphmhagRmq/S9lppTkM4w3qCQezxk=")
+        initLicense("t0068MgAAAD7z+U5pnqewjyssJP/njbxww+pxzd89JQ3nSODVo9GUADZq/0xTQx+OR7Fr8BT3A2kq/srsIxVrMcg6p5AR3T0=")
         decodeFile(barcode_image)
         image = cv2.imread(barcode_image, 1)
         decodeBuffer(image)

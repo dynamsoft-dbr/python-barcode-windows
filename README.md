@@ -1,32 +1,28 @@
 # Building Python Extension with DBR for Windows
 
 ## Prerequisites
-* [Dynamsoft Barcode Reader 5.2 for Windows][0]
+* [Dynamsoft Barcode Reader 5.2 for Windows][0]. Copy **Dynamsoft\Barcode Reader 5.2\Components\C_C++\Redist\DynamsoftBarcodeReaderx86.dll** to **Python27\Lib\site-packages** / **Python35\Lib\site-packages**
 * Python 2.7.0 / Python 3.5.0
-* OpenCV 2.4.10
-* Windows 10
-* USB webcam
-
-## How to Build the Extension
-1. Install OpenCV-Python **cv2.pyd**:
+* OpenCV 3.3.0
 
     ```
     pip install opencv-python
     ```
+* NumPy 1.11.2
 
-2. Set Visual Studio environment:
-    * Visual Studio 2010 (VS10): SET VS90COMNTOOLS=%VS100COMNTOOLS%
-    * Visual Studio 2012 (VS11): SET VS90COMNTOOLS=%VS110COMNTOOLS%
-    * Visual Studio 2013 (VS12): SET VS90COMNTOOLS=%VS120COMNTOOLS%
-    * Visual Studio 2015 (VS14): SET VS90COMNTOOLS=%VS140COMNTOOLS%
-
-    If you are using **Visual Studio 2015**, use the following command:
+    ```
+    pip install numpy
+    ```
+* Visual Studio 2015
 
     ```
     SET VS90COMNTOOLS=%VS140COMNTOOLS%
     ```
+* Windows 10
+* USB webcam
 
-3. Add SDK paths to **setup.py**:
+## How to Build the Extension
+1. Edit **setup.py**. Replace the include and lib paths with yours:
 
     ```python
     from distutils.core import setup, Extension
@@ -55,14 +51,12 @@
 
     ```
 
-4. Build the Python extension
+2. Build the Python extension
 
     ```
     python setup.py build install
     python3 setup.py build install
     ```
-
-4. Copy **Dynamsoft\Barcode Reader 5.2\Components\C_C++\Redist\DynamsoftBarcodeReaderx86.dll** to **Python27\Lib\site-packages** / **Python35\Lib\site-packages**
 
 ## How to Run the app
 1. Connect a USB webcam to your PC.
