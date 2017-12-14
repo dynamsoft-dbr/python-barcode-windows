@@ -67,7 +67,8 @@
     ![webcam barcode reader with OpenCV Python](http://www.codepool.biz/wp-content/uploads/2017/04/python-barcode-reader.PNG)
 
 ## Blog
-[Building Python Barcode Extension with DBR 5.0 on Windows][2]
+* [How to Port C/C++ Barcode Extension to Python 3](http://www.codepool.biz/cc-barcode-extension-python-3.html)
+* [Building Python Barcode Extension with DBR 5.0 on Windows][2]
 
 [0]:http://www.dynamsoft.com/Downloads/Dynamic-Barcode-Reader-Download.aspx
 [1]:http://stackoverflow.com/questions/2817869/error-unable-to-find-vcvarsall-bat
