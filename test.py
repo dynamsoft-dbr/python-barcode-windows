@@ -1,13 +1,16 @@
-import os.path
+import os
 import dbr
 import cv2
+
+def loadSettings(setting_file):
+    dbr.loadSettings(setting_file)
 
 def initLicense(license):
     dbr.initLicense(license)
 
 def decodeFile(fileName):
     formats = 0x3FF | 0x2000000 | 0x8000000 | 0x4000000 # 1D, QRCODE, PDF417, DataMatrix
-    results = dbr.decodeFile(fileName, formats)
+    results = dbr.decodeFile(fileName, formats, 'CUSTOM')
     
     for result in results:
         print("barcode format: " + result[0])
@@ -15,18 +18,25 @@ def decodeFile(fileName):
 
 def decodeBuffer(image):
     formats = 0x3FF | 0x2000000 | 0x8000000 | 0x4000000 # 1D, QRCODE, PDF417, DataMatrix
-    results = dbr.decodeBuffer(image, formats)
+    results = dbr.decodeBuffer(image, formats, 'CUSTOM')
     
     for result in results:
         print("barcode format: " + result[0])
         print("barcode value: " + result[1])
 
 if __name__ == "__main__":
-    barcode_image = input("Enter the barcode file: ")
+    import sys
+    if sys.version_info < (3, 0):
+        barcode_image = raw_input("Enter the barcode file: ")
+    else:
+        barcode_image = input("Enter the barcode file: ")
+        
     if not os.path.isfile(barcode_image):
         print("It is not a valid file.")
     else:
-        initLicense("t0068MgAAAD7z+U5pnqewjyssJP/njbxww+pxzd89JQ3nSODVo9GUADZq/0xTQx+OR7Fr8BT3A2kq/srsIxVrMcg6p5AR3T0=")
+        initLicense("t0068MgAAABt/IBmbdOLQj2EIDtPBkg8tPVp6wuFflHU0+y14UaUt5KpXdhAxlERuDYvJy7AOB514QK4H50mznL6NZtBjITQ=")
+        setting_file = os.path.join(os.getcwd(), 'templates', 'default.settings.json')
+        loadSettings(setting_file)
         decodeFile(barcode_image)
         image = cv2.imread(barcode_image, 1)
         decodeBuffer(image)

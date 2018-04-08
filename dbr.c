@@ -99,21 +99,38 @@ initLicense(PyObject *self, PyObject *args)
         return NULL;
     }
 
-	int ret = DBR_InitLicenseEx(hBarcode, pszLicense);
+	int ret = DBR_InitLicense(hBarcode, pszLicense);
     return Py_BuildValue("i", ret);
 }
 
-static PyObject *createPyResults(SBarcodeResultArray *pResults)
+// Load settings from template files.
+static PyObject *
+loadSettings(PyObject *self, PyObject *args)
 {
-    if (!pResults)
+    if (!createDBR()) 
+    {
+        return NULL;
+    }
+
+    char *pszSettingFile;
+    if (!PyArg_ParseTuple(args, "s", &pszSettingFile)) {
+        return NULL;
+    }
+
+    char szErrorMsg[256];
+	int ret = DBR_LoadSettingsFromFile(hBarcode, pszSettingFile, szErrorMsg, 256);
+    return Py_BuildValue("i", ret);
+}
+
+static PyObject *createPyResults(STextResultArray *paryResult)
+{
+    if (!paryResult)
     {
         printf("No barcode detected\n");
         return NULL;
     }
     // Get barcode results
-    int count = pResults->iBarcodeCount;
-	SBarcodeResult** ppBarcodes = pResults->ppBarcodes;
-	SBarcodeResult* tmp = NULL;
+    int count = paryResult->nResultsCount;
 
     // Create a Python object to store results
     PyObject* list = PyList_New(count); 
@@ -121,17 +138,11 @@ static PyObject *createPyResults(SBarcodeResultArray *pResults)
     PyObject* result = NULL;
     for (int i = 0; i < count; i++)
     {
-        tmp = ppBarcodes[i];
-        #if defined(IS_PY3K)
-        result = PyUnicode_FromFormat("%s", tmp->pBarcodeData);
-        #else
-        result = PyString_FromString(tmp->pBarcodeData);
-        #endif
-        PyList_SetItem(list, i, Py_BuildValue("sN", tmp->pBarcodeFormatString, result)); // Add results to list
+        PyList_SetItem(list, i, Py_BuildValue("ss", paryResult->ppResults[i]->pszBarcodeFormatString, paryResult->ppResults[i]->pszBarcodeText)); // Add results to list
     }
 
     // Release memory
-    DBR_FreeBarcodeResults(&pResults);
+    DBR_FreeTextResults(&paryResult);
 
     return list;
 }
@@ -147,23 +158,21 @@ decodeFile(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    char *pFileName;
-    int iFormat;
-    if (!PyArg_ParseTuple(args, "si", &pFileName, &iFormat)) {
+    char *pFileName; // File name
+    int iFormat;     // Barcode formats
+    char *pszTemplateName; // template name
+    if (!PyArg_ParseTuple(args, "sis", &pFileName, &iFormat, &pszTemplateName)) {
         return NULL;
     }
 
-    // Initialize Dynamsoft Barcode Reader
-	int iMaxCount = 0x7FFFFFFF;
-	SBarcodeResultArray *pResults = NULL;
-	DBR_SetBarcodeFormats(hBarcode, iFormat);
-	DBR_SetMaxBarcodesNumPerPage(hBarcode, iMaxCount);
+    STextResultArray *paryResult = NULL;
 
     // Barcode detection
-    int ret = DBR_DecodeFileEx(hBarcode, pFileName, &pResults);
+    int ret = DBR_DecodeFile(hBarcode, pFileName, pszTemplateName);
+    DBR_GetAllTextResults(hBarcode, &paryResult);
 
     // Wrap results
-    PyObject *list = createPyResults(pResults);
+    PyObject *list = createPyResults(paryResult);
     return list;
 }
 
@@ -180,7 +189,8 @@ decodeBuffer(PyObject *self, PyObject *args)
 
     PyObject *o;
     int iFormat;
-    if (!PyArg_ParseTuple(args, "Oi", &o, &iFormat))
+    char *pszTemplateName; // template name
+    if (!PyArg_ParseTuple(args, "Ois", &o, &iFormat, &pszTemplateName))
         return NULL;
 
     #if defined(IS_PY3K)
@@ -225,19 +235,17 @@ decodeBuffer(PyObject *self, PyObject *args)
     #endif
 
     // Initialize Dynamsoft Barcode Reader
-    int iMaxCount = 0x7FFFFFFF;
-	SBarcodeResultArray *pResults = NULL;
-	DBR_SetBarcodeFormats(hBarcode, iFormat);
-	DBR_SetMaxBarcodesNumPerPage(hBarcode, iMaxCount);
+    STextResultArray *paryResult = NULL;
 
     // Detect barcodes
     int depth = 24;
     int iStride = ((width * depth + 31) >> 5) << 2;
 
     PyObject *list = NULL;
-    int iRet = DBR_DecodeBufferEx(hBarcode, buffer, width, height, iStride, IPF_RGB_888, &pResults);
+    int iRet = DBR_DecodeBuffer(hBarcode, buffer, width, height, iStride, IPF_RGB_888, pszTemplateName);
     // Wrap results
-    list = createPyResults(pResults);
+    DBR_GetAllTextResults(hBarcode, &paryResult);
+    list = createPyResults(paryResult);
     
     #if defined(IS_PY3K)
     Py_DECREF(memoryview);
@@ -253,6 +261,7 @@ static PyMethodDef dbr_methods[] =
     {"create", create, METH_VARARGS, NULL},
     {"destroy", destroy, METH_VARARGS, NULL},
     {"initLicense", initLicense, METH_VARARGS, NULL},
+    {"loadSettings", loadSettings, METH_VARARGS, NULL},
     {"decodeFile", decodeFile, METH_VARARGS, NULL},
     {"decodeBuffer", decodeBuffer, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
