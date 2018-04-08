@@ -1,6 +1,7 @@
 import cv2
 import dbr
 import time
+import os
 
 def get_time():
     localtime = time.localtime()
@@ -12,7 +13,9 @@ def read_barcode():
     vc = cv2.VideoCapture(0)
 
     if vc.isOpened(): # try to get the first frame
-        dbr.initLicense("t0260NQAAALGw+aCAePXdOS3p1xkqT5hesExKVpEe7NiIhkdlUz/Jvx8km3ItI0ykUcmeP67BYVlJ2PDW++bjSYmDLmyMgOmmvc0mdvhlSy500kqnLoBAL+TybcdAP42b5p5WehK9Gsmweqi+ydK6B0KaUNQMDJZ1DrnhDXZ209pfpJoVybPk/CMcDKXaF2oRLKEOYVscXTF6mbiWUnMP5lj4OdTvFa0eVRcE0q9BckiqYgUZLK4L6DVgRXWRL5nRPtvEtd+qZe6psu0JZ7HEPhsbodfAVH2G436z1QahLGJXdQCoQv8UQ/quGQP2wCWemfueeKJ4Y6WsvEvmkUpizbTOE3Njjaw=")
+        dbr.initLicense("t0068MgAAABt/IBmbdOLQj2EIDtPBkg8tPVp6wuFflHU0+y14UaUt5KpXdhAxlERuDYvJy7AOB514QK4H50mznL6NZtBjITQ=")
+        setting_file = os.path.join(os.getcwd(), 'templates', 'default.settings.json')
+        dbr.loadSettings(setting_file)
         rval, frame = vc.read()
     else:
         return
@@ -23,7 +26,7 @@ def read_barcode():
     while True:
         cv2.imshow(windowName, frame)
         rval, frame = vc.read();
-        results = dbr.decodeBuffer(frame, formats)
+        results = dbr.decodeBuffer(frame, formats, 'CUSTOM')
         if (len(results) > 0):
             print(get_time())
             print("Total count: " + str(len(results)))

@@ -1,14 +1,14 @@
 # Building Python Extension with DBR for Windows
 
 ## Prerequisites
-* [Dynamsoft Barcode Reader 5.2 for Windows][0]. Copy **Dynamsoft\Barcode Reader 5.2\Components\C_C++\Redist\DynamsoftBarcodeReaderx86.dll** to **Python27\Lib\site-packages** / **Python35\Lib\site-packages**
-* Python 2.7.0 / Python 3.5.0
-* OpenCV 3.3.0
+* [Dynamsoft Barcode Reader 6.0 for Windows][0]
+* Python 2/3
+* OpenCV-Python
 
     ```
     pip install opencv-python
     ```
-* NumPy 1.11.2
+* NumPy
 
     ```
     pip install numpy
@@ -22,33 +22,44 @@
 * USB webcam
 
 ## How to Build the Extension
-1. Edit **setup.py**. Replace the include and lib paths with yours:
+1. Edit **setup.py**. Replace the **dbr_lib_dir** and **dbr_dll** with yours:
 
     ```python
     from distutils.core import setup, Extension
-    import sys
+    import sys, os, numpy
 
-    dbr_include_dir = 'e:\\Program Files (x86)\\Dynamsoft\\Barcode Reader 5.2\\Components\\C_C++\\Include'
-    dbr_lib_dir = 'e:\\Program Files (x86)\\Dynamsoft\Barcode Reader 5.2\\Components\\C_C++\\Lib'
+    from distutils.command.install import install
 
+    numpy_include = os.path.join(os.path.dirname(numpy.__file__), "core", "include", "numpy")
+    print(numpy_include)
 
-    numpy_include_dir = None
-    if sys.version_info[0] == 2 and sys.version_info[1] == 7:
-        numpy_include_dir = "F:\\Python27\\Lib\\site-packages\\numpy-1.11.2-py2.7-win32.egg\\numpy\\core\\include\\numpy"
-    else:
-        numpy_include_dir = "F:\\Python35\\Lib\\site-packages\\numpy-1.11.2-py3.5-win32.egg\\numpy\\core\\include\\numpy"
+    dbr_lib_dir = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.0\Components\C_C++\Lib'
+    dbr_dll = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.0\Components\C_C++\Redist\x86\DynamsoftBarcodeReaderx86.dll'
 
-    print(sys.version_info)
-    print(numpy_include_dir)
     module_dbr = Extension('dbr', sources=['dbr.c'], include_dirs=[
-                        numpy_include_dir, dbr_include_dir], library_dirs=[dbr_lib_dir], libraries=['DBRx86'])
+                        numpy_include], library_dirs=[dbr_lib_dir], libraries=['DBRx86'])
 
-    setup(name='DynamsoftBarcodeReader',
-        version='1.0',
+    class CustomInstall(install):
+        def run(self):
+            install.run(self)
+            import shutil
+            from distutils.sysconfig import get_python_lib
+            src = dbr_dll
+            dst = get_python_lib()
+            shutil.copy2(src, dst)
+
+    setup(name='dbr',
+        version='6.0',
         description='Python barcode extension',
-        ext_modules=[module_dbr])
-
-
+        author='Xiao Ling',
+        author_email='xiao@dynamsoft.com',
+        url='https://www.dynamsoft.com/Products/Dynamic-Barcode-Reader.aspx',
+        license = 'https://www.dynamsoft.com/Products/barcode-reader-license-agreement.aspx',
+        ext_modules=[module_dbr],
+        long_description='Dynamsoft Barcode Reader is a software development toolkit which enables barcode recognition of Code 39, Code 129, QR Code, DataMatrix, PDF417.',
+        platforms=['Windows'],
+        cmdclass={'install': CustomInstall}
+    )
     ```
 
 2. Build the Python extension
@@ -59,6 +70,13 @@
     ```
 
 ## How to Run the app
+**A simple command line app**
+
+```
+python test.py
+```
+
+**Camera**
 1. Connect a USB webcam to your PC.
 2. Run **camera.py** or **camera_thread.py**:
     ```

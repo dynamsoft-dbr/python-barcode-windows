@@ -3,6 +3,7 @@ import dbr
 import time
 import threading
 import Queue
+import os
 
 q = Queue.Queue(1)
 
@@ -19,7 +20,7 @@ class BarcodeReaderThread (threading.Thread):
         while self.isRunning:
             # Get a frame
             frame = q.get(True)
-            results = dbr.decodeBuffer(frame, formats)
+            results = dbr.decodeBuffer(frame, formats, 'CUSTOM')
             q.task_done()
 
             if (len(results) > 0):
@@ -40,7 +41,9 @@ def read_barcode():
     vc = cv2.VideoCapture(0)
 
     if vc.isOpened(): # try to get the first frame
-        dbr.initLicense("t0260NQAAALGw+aCAePXdOS3p1xkqT5hesExKVpEe7NiIhkdlUz/Jvx8km3ItI0ykUcmeP67BYVlJ2PDW++bjSYmDLmyMgOmmvc0mdvhlSy500kqnLoBAL+TybcdAP42b5p5WehK9Gsmweqi+ydK6B0KaUNQMDJZ1DrnhDXZ209pfpJoVybPk/CMcDKXaF2oRLKEOYVscXTF6mbiWUnMP5lj4OdTvFa0eVRcE0q9BckiqYgUZLK4L6DVgRXWRL5nRPtvEtd+qZe6psu0JZ7HEPhsbodfAVH2G436z1QahLGJXdQCoQv8UQ/quGQP2wCWemfueeKJ4Y6WsvEvmkUpizbTOE3Njjaw=")
+        dbr.initLicense("t0068MgAAABt/IBmbdOLQj2EIDtPBkg8tPVp6wuFflHU0+y14UaUt5KpXdhAxlERuDYvJy7AOB514QK4H50mznL6NZtBjITQ=")
+        setting_file = os.path.join(os.getcwd(), 'templates', 'default.settings.json')
+        dbr.loadSettings(setting_file)
         rval, frame = vc.read()
     else:
         return
