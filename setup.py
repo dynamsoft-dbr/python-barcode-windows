@@ -6,11 +6,11 @@ from distutils.command.install import install
 numpy_include = os.path.join(os.path.dirname(numpy.__file__), "core", "include", "numpy")
 print(numpy_include)
 
-dbr_lib_dir = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.0\Components\C_C++\Lib'
-dbr_dll = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.0\Components\C_C++\Redist\x86\DynamsoftBarcodeReaderx86.dll'
+dbr_lib_dir = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.1\Components\C_C++\Lib'
+dbr_dll = r'e:\Program Files (x86)\Dynamsoft\Barcode Reader 6.1\Components\C_C++\Redist\x64\DynamsoftBarcodeReaderx64.dll'
 
 module_dbr = Extension('dbr', sources=['dbr.c'], include_dirs=[
-                       numpy_include], library_dirs=[dbr_lib_dir], libraries=['DBRx86'])
+                       numpy_include], library_dirs=[dbr_lib_dir], libraries=['DBRx64'])
 
 class CustomInstall(install):
       def run(self):
@@ -22,7 +22,7 @@ class CustomInstall(install):
           shutil.copy2(src, dst)
 
 setup(name='dbr',
-      version='6.0',
+      version='6.1',
       description='Python barcode extension',
       author='Xiao Ling',
       author_email='xiao@dynamsoft.com',

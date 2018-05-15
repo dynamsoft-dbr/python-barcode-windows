@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if not os.path.isfile(barcode_image):
         print("It is not a valid file.")
     else:
-        initLicense("t0068MgAAABt/IBmbdOLQj2EIDtPBkg8tPVp6wuFflHU0+y14UaUt5KpXdhAxlERuDYvJy7AOB514QK4H50mznL6NZtBjITQ=")
+        initLicense("t0068MgAAAGhyhnDz09eHhPRZ5MRe3ak0VO/TZmolcIp39SoQ8LtsgZhzAj5khTx+OFsXgz+HIz+MNaC7VA69MM1N26gNlZA=")
         setting_file = os.path.join(os.getcwd(), 'templates', 'default.settings.json')
         loadSettings(setting_file)
         decodeFile(barcode_image)

@@ -1,6 +1,6 @@
 /*
 *	DynamsoftBarcodeReader.h
-*	Dynamsoft Barcode Reader 6.0 C/C++ API header file.
+*	Dynamsoft Barcode Reader 6.1 C/C++ API header file.
 *
 *	Copyright 2018 Dynamsoft Corporation. All rights reserved.
 */
@@ -12,6 +12,7 @@
 #define DBR_API __attribute__((visibility("default")))
 typedef signed char BOOL;
 typedef void* HANDLE;
+#include <cstddef>
 #else
 #ifdef DBR_EXPORTS
 #define DBR_API __declspec(dllexport)
@@ -93,6 +94,8 @@ typedef void* HANDLE;
 #define DBRERR_TEMPLATE_NAME_INVALID		-10036
 // The name reference is invalid
 #define DBRERR_JSON_NAME_REFERENCE_INVALID	-10037
+//The parameter value is invalid or out of range.
+#define DBRERR_PARAMETER_VALUE_INVALID      -10038
 
 //---------------------------------------------------------------------------
 // Enums
@@ -308,6 +311,62 @@ typedef struct tagSTextResultArray
 	PSTextResult *ppResults;
 } STextResultArray;
 
+
+
+
+typedef enum 
+{
+	//RPM_Auto,
+    RPM_Disable = 1,
+    RPM_Enable = 2,
+	//RPM_Unknown
+}RegionPredetectionMode;
+
+typedef enum 
+{
+	//TFM_Auto,
+    TFM_Disable = 1,
+    TFM_Enable = 2,
+	//TFM_Unknown
+}TextFilterMode;
+
+
+typedef enum 
+{
+    BIM_DarkOnLight,
+    BIM_LightOnDark,
+	//BCM_Unknown
+}BarcodeInvertMode;
+
+typedef enum 
+{
+	CICM_Auto = 0,
+	CICM_Grayscale = 1
+}ColourImageConvertMode;
+
+typedef struct tagPublicParameterSettings
+{
+    char mName[32];
+    int mTimeout;
+    int mPDFRasterDPI;
+    TextFilterMode mTextFilterMode;
+    RegionPredetectionMode mRegionPredetectionMode;
+    char mLocalizationAlgorithmPriority[64];
+    int mBarcodeFormatIds;
+    int mMaxAlgorithmThreadCount;
+    int mTextureDetectionSensitivity;
+    int mDeblurLevel;
+    int mAntiDamageLevel;
+    int mMaxImageDimensionToLocalizeBarcodesOnFullImage;
+    int mMaxBarcodesCount;
+    BarcodeInvertMode mBarcodeInvertMode;
+    int mScaleDownThreshold;
+    int mGrayEqualizationSensitivity;
+    int mEnableFillBinaryVacancy;
+    ColourImageConvertMode mColourImageConvertMode;
+	char mReserved[256];
+}PublicParameterSettings;
+
 #pragma pack(pop)
 
 //---------------------------------------------------------------------------
@@ -330,6 +389,9 @@ extern "C" {
 	// @param [in] pszLicense The license keys.
 	// @return Returns error code. Returns 0 if the function completed successfully.
 	DBR_API int  DBR_InitLicense(void*  hBarcode, const char* pszLicense);
+
+	
+	DBR_API int  DBR_SetLicenseServer(void* hBarcode,const char* pszServerUrl,const char* pszPublicKey);
 
 	// Load paramter settings from JSON file. 
 	// @param [in] hBarcode Handle of the barcode reader instance. 
@@ -449,6 +511,10 @@ extern "C" {
 	DBR_API int DBR_SaveParameterTemplate(void* hBarcode, const char* pszTemplateName, char szContent[], int nContentLength);
 	DBR_API int DBR_CheckParameterTemplate(const char* pszTemplateContent, char szErrorMsgBuffer[], int nErrorMsgBufferLen);
 
+	DBR_API int DBR_GetTemplateSettings(void* hBarcode,const char*pszTemplateName, PublicParameterSettings *pSettings);
+
+	DBR_API int DBR_SetTemplateSettings(void* hBarcode,const char*pszTemplateName,PublicParameterSettings *pSettings,char szErrorMsgBuffer[],int nErrorMsgBufferLen);
+
 #ifdef __cplusplus
 }
 #endif
@@ -476,6 +542,7 @@ public:
 	// @return Returns the error code. Returns It will return 0 if the function completesed successfully.
 	int InitLicense(const char* pLicense);
 
+	int SetLicenseServer(const char* pszServerUrl,const char* pszPublicKey);
 	// Loads parameter settings from a JSON file. 
 	// @param [in] pszFilePath The path of the settings file.The settings file path.
 	// @param [in/out] szErrorMsgBuffer The buffer is allocated by caller and the recommending recommended length is 256. The error message would will be copiedy to the buffer. 
@@ -503,6 +570,14 @@ public:
 	// @param [in] nErrorMsgBufferLen The length of the allocated buffer.
 	// @return Returns the error code. It will return 0 if the function completes successfully.
 	int  AppendParameterTemplate(const char* pszFileContent, char szErrorMsgBuffer[] = NULL, int nErrorMsgBufferLen = 0);
+
+	// Unload the parameter template in a specified name. 
+	// @param [in] pszTemplateName The name of the template.
+	// @param [in/out] szErrorMsgBuffer The buffer is allocated by caller and the recommended length is 256. The error message will be copied to the buffer. 
+	// @param [in] nErrorMsgBufferLen The length of the allocated buffer.
+	// @return Returns the error code. It will return 0 if the function completes successfully.
+	int  UnloadParameterTemplate(const char* pszTemplateName, char szErrorMsgBuffer[] = NULL, int nErrorMsgBufferLen = 0);
+
 
 	// Gets the count of the parameter templates. 
 	// @return Returns the count of parameter template.
@@ -580,6 +655,8 @@ public:
 	int SaveSettings(char szContent[], int nContentLength);
 	int SaveParameterTemplate(const char* pszTemplateName, char szContent[], int nContentLength);
 	static int CheckParameterTemplate(const char* pszTemplateContent, char szErrorMsgBuffer[], int nErrorMsgBufferLen);
+	int GetTemplateSettings(const char* pszTemplateName,PublicParameterSettings *psettings);
+	int SetTemplateSettings(const char* pszTemplateName,PublicParameterSettings *psettings,char szErrorMsgBuffer[],int nErrorMsgBufferLen);
 
 private:
 	CBarcodeReader(const CBarcodeReader& r);
