@@ -79,12 +79,15 @@ python test.py
 **Camera**
 1. Connect a USB webcam to your PC.
 2. Run **camera.py** or **camera_thread.py**:
+
     ```
     python camera.py
     ```
+    
     ![webcam barcode reader with OpenCV Python](http://www.codepool.biz/wp-content/uploads/2017/04/python-barcode-reader.png)
 
 ## Blog
+* [Things to Do with DBR 6.0 and Python Barcode Extension](http://www.codepool.biz/dynamsoft-barcode-python-extension-6-0.html)
 * [How to Port C/C++ Barcode Extension to Python 3](http://www.codepool.biz/cc-barcode-extension-python-3.html)
 * [Building Python Barcode Extension with DBR 5.0 on Windows][2]
 
